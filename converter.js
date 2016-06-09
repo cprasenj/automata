@@ -78,6 +78,7 @@ var nfaGenerator = function(tuple) {
       delta[start_state][inputList[0]] && (inputList = inputList.slice(1));
     }
     var lastStates = inputList.reduce(nfa_next(tuple["delta"]), startStates);
+    lastStates = flatten_array(epsilonResolver(delta, lastStates));
     return hasInterSection(tuple["final-states"], lastStates);
   }
 }
