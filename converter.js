@@ -2,6 +2,12 @@ var flatten_array = function (nestedArray) {
   return [].concat.apply([], nestedArray);
 }
 
+var isPresentInList = function(list, elemList) {
+  return elemList.some(function(elem) {
+    return list.indexOf(elem) >= 0;
+  });
+}
+
 var dfa_step_evaluator = function(delta) {
   return function(lastState, symbol) {
     return delta[lastState][symbol];
@@ -49,18 +55,14 @@ var nfa_step_evaluator = function(delta) {
 
 var nfaGenerator = function(tuple) {
   return function(inputString) {
-    var inputList = inputString.split("");
     var start_state = tuple["start-state"];
     var delta = tuple["delta"];
 
-    var startStates = delta[start_state]["e"] &&
-    (!delta[start_state][inputString[0]]) ?
+    var startStates = delta[start_state]["e"] && (!delta[start_state][inputString[0]]) ?
     delta[start_state]["e"] : [start_state];
 
-    var lastStates = inputList.reduce(nfa_step_evaluator(tuple["delta"]), startStates);
-    return lastStates.some(function(aState) {
-      return tuple["final-states"].indexOf(aState) >= 0;
-    })
+    var lastStates = inputString.split("").reduce(nfa_step_evaluator(tuple["delta"]), startStates);
+    return isPresentInList(tuple["final-states"], lastStates);
   }
 }
 
