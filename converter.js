@@ -61,7 +61,7 @@ var nfaGenerator = function(tuple) {
     var inputList = inputString.split("");
     if(delta[start_state]["e"]) {
         if(!inputString[0]){
-          startStates = flatten_array(resolveState(delta, start_state, (inputString[0] || "")));
+          startStates = flatten_array(resolveState(delta, start_state, ""));
         } else {
             startStates = delta[start_state]["e"];
             if(delta[start_state][inputList[0]]) {
