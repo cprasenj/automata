@@ -24,17 +24,17 @@ var runTestCases = function(automata, dataSet) {
 }
 
 var shouldExecute = function(flag, type) {
-  var shouldExec=true;
+  var shouldExec = true;
   if(flag) {
-    shouldExec=(flag==type);
+    shouldExec = (flag == type);
   }
   return shouldExec;
 }
 
 var run = function(data, converter){
   data.forEach(function(dataSet) {
-    var type=dataSet.type;
-    var tuple=dataSet.tuple;
+    var type = dataSet.type;
+    var tuple = dataSet.tuple;
     if(shouldExecute(flag, type) && converter) {
       var automata = converter(type,tuple);
       console.log(chalk.yellow(util.format("running %s example for %s", dataSet["name"], dataSet["type"])));
