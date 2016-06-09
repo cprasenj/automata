@@ -53,6 +53,18 @@ var nfa_step_evaluator = function(delta) {
   }
 }
 
+var beginingEpsilonRisolver = function(delta, inputString, start_state) {
+  if(!inputString[0]) {
+    startStates = flatten_array(resolveState(delta, start_state, ""));
+  } else {
+    startStates = delta[start_state]["e"];
+    if(delta[start_state][inputString[0]]) {
+      startStates = flatten_array([startStates, delta[start_state][inputString[0]]]);
+    }
+  }
+  return startStates;
+}
+
 var nfaGenerator = function(tuple) {
   return function(inputString) {
     var start_state = tuple["start-state"];
@@ -60,20 +72,35 @@ var nfaGenerator = function(tuple) {
     var startStates = [start_state];
     var inputList = inputString.split("");
     if(delta[start_state]["e"]) {
-        if(!inputString[0]){
-          startStates = flatten_array(resolveState(delta, start_state, ""));
-        } else {
-            startStates = delta[start_state]["e"];
-            if(delta[start_state][inputList[0]]) {
-              startStates = flatten_array([startStates, delta[start_state][inputList[0]]]);
-              inputList = inputList.slice(1);
-            }
-        }
+      startStates = beginingEpsilonRisolver(delta, inputString, start_state);
+      delta[start_state][inputList[0]] && (inputList = inputList.slice(1));
     }
     var lastStates = inputList.reduce(nfa_step_evaluator(tuple["delta"]), startStates);
     return isPresentInList(tuple["final-states"], lastStates);
   }
 }
+
+// var nfaGenerator = function(tuple) {
+//   return function(inputString) {
+//     var start_state = tuple["start-state"];
+//     var delta = tuple["delta"];
+//     var startStates = [start_state];
+//     var inputList = inputString.split("");
+//     if(delta[start_state]["e"]) {
+//         if(!inputString[0]){
+//           startStates = flatten_array(resolveState(delta, start_state, ""));
+//         } else {
+//             startStates = delta[start_state]["e"];
+//             if(delta[start_state][inputList[0]]) {
+//               startStates = flatten_array([startStates, delta[start_state][inputList[0]]]);
+//               inputList = inputList.slice(1);
+//             }
+//         }
+//     }
+//     var lastStates = inputList.reduce(nfa_step_evaluator(tuple["delta"]), startStates);
+//     return isPresentInList(tuple["final-states"], lastStates);
+//   }
+// }
 
 exports.finiteAutomata = function(type, tuple){
     return (type == "dfa") ? dfaGenerator(tuple) : nfaGenerator(tuple);
