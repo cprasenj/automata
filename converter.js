@@ -57,11 +57,20 @@ var nfaGenerator = function(tuple) {
   return function(inputString) {
     var start_state = tuple["start-state"];
     var delta = tuple["delta"];
-
-    var startStates = delta[start_state]["e"] ?
-    flatten_array(resolveState(delta, start_state, (inputString[0] || ""))) : [start_state];
-
-    var lastStates = inputString.split("").reduce(nfa_step_evaluator(tuple["delta"]), startStates);
+    var startStates = [start_state];
+    var inputList = inputString.split("");
+    if(delta[start_state]["e"]) {
+        if(!inputString[0]){
+          startStates = flatten_array(resolveState(delta, start_state, (inputString[0] || "")));
+        } else {
+            startStates = delta[start_state]["e"];
+            if(delta[start_state][inputList[0]]) {
+              startStates = flatten_array([startStates, delta[start_state][inputList[0]]]);
+              inputList = inputList.slice(1);
+            }
+        }
+    }
+    var lastStates = inputList.reduce(nfa_step_evaluator(tuple["delta"]), startStates);
     return isPresentInList(tuple["final-states"], lastStates);
   }
 }
