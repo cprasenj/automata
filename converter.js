@@ -2,13 +2,13 @@ var flatten_array = function (nestedArray) {
   return [].concat.apply([], nestedArray);
 }
 
-var isPresentInList = function(list, elemList) {
+var hasInterSection = function(list, elemList) {
   return elemList.some(function(elem) {
     return list.indexOf(elem) >= 0;
   });
 }
 
-var dfa_step_evaluator = function(delta) {
+var dfa_next = function(delta) {
   return function(lastState, symbol) {
     return delta[lastState][symbol];
   }
@@ -16,7 +16,9 @@ var dfa_step_evaluator = function(delta) {
 
 var dfaGenerator = function(tuple) {
     return function(inputString) {
-      var lastState = inputString.split("").reduce(dfa_step_evaluator(tuple["delta"]), tuple["start-state"]);
+      var lastState = inputString.split("").reduce(
+        dfa_next(tuple["delta"]), tuple["start-state"]
+      );
       return tuple["final-states"].indexOf(lastState) >= 0;
     }
 }
@@ -44,7 +46,7 @@ var resolveState = function(delta, aState, symbol) {
   return flatten_array([returnStates, epsilonReturnStates])
 }
 
-var nfa_step_evaluator = function(delta) {
+var nfa_next = function(delta) {
   return function(lastStates, symbol) {
     var nextStates = lastStates.map(function(aNextState) {
       return resolveState(delta, aNextState, symbol);
@@ -75,32 +77,10 @@ var nfaGenerator = function(tuple) {
       startStates = beginingEpsilonRisolver(delta, inputString, start_state);
       delta[start_state][inputList[0]] && (inputList = inputList.slice(1));
     }
-    var lastStates = inputList.reduce(nfa_step_evaluator(tuple["delta"]), startStates);
-    return isPresentInList(tuple["final-states"], lastStates);
+    var lastStates = inputList.reduce(nfa_next(tuple["delta"]), startStates);
+    return hasInterSection(tuple["final-states"], lastStates);
   }
 }
-
-// var nfaGenerator = function(tuple) {
-//   return function(inputString) {
-//     var start_state = tuple["start-state"];
-//     var delta = tuple["delta"];
-//     var startStates = [start_state];
-//     var inputList = inputString.split("");
-//     if(delta[start_state]["e"]) {
-//         if(!inputString[0]){
-//           startStates = flatten_array(resolveState(delta, start_state, ""));
-//         } else {
-//             startStates = delta[start_state]["e"];
-//             if(delta[start_state][inputList[0]]) {
-//               startStates = flatten_array([startStates, delta[start_state][inputList[0]]]);
-//               inputList = inputList.slice(1);
-//             }
-//         }
-//     }
-//     var lastStates = inputList.reduce(nfa_step_evaluator(tuple["delta"]), startStates);
-//     return isPresentInList(tuple["final-states"], lastStates);
-//   }
-// }
 
 exports.finiteAutomata = function(type, tuple){
     return (type == "dfa") ? dfaGenerator(tuple) : nfaGenerator(tuple);
