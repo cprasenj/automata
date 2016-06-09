@@ -28,7 +28,7 @@ var epsilonResolver = function(delta, nextStates) {
     var epsilonResolved = [];
     if(epsilonTransition) {
       epsilonResolved = epsilonTransition.map(function(state) {
-        return epsilonResolver(delta, state);
+        return epsilonResolver(delta, [state]);
       });
       resultStates.push(epsilonResolved);
     } else {
@@ -58,8 +58,8 @@ var nfaGenerator = function(tuple) {
     var start_state = tuple["start-state"];
     var delta = tuple["delta"];
 
-    var startStates = delta[start_state]["e"] && (!delta[start_state][inputString[0]]) ?
-    delta[start_state]["e"] : [start_state];
+    var startStates = delta[start_state]["e"] ?
+    flatten_array(resolveState(delta, start_state, (inputString[0] || ""))) : [start_state];
 
     var lastStates = inputString.split("").reduce(nfa_step_evaluator(tuple["delta"]), startStates);
     return isPresentInList(tuple["final-states"], lastStates);
