@@ -36,8 +36,9 @@ var run = function(data, converter){
     var type = dataSet.type;
     var tuple = dataSet.tuple;
     if(shouldExecute(flag, type) && converter) {
+      console.log(JSON.stringify(dataSet))
       var automata = converter(type,tuple);
-      console.log(chalk.yellow(util.format("running %s example for %s", dataSet["name"], dataSet["type"])));
+      console.log(chalk.yellow(util.format("Running %s example for %s", dataSet["name"], dataSet["type"])));
       console.log(chalk.yellow("Running for inputs:"));
       runTestCases(automata, dataSet);
     }

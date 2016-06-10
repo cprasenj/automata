@@ -1,12 +1,4 @@
-var flatten_array = function (nestedArray) {
-  return [].concat.apply([], nestedArray);
-}
-
-var hasInterSection = function(list, elemList) {
-  return elemList.some(function(elem) {
-    return list.indexOf(elem) >= 0;
-  });
-}
+var util = require('./util.js').util;
 
 var dfa_next = function(delta) {
   return function(lastState, symbol) {
@@ -24,28 +16,18 @@ var dfaGenerator = function(tuple) {
 }
 
 var epsilonResolver = function(delta, nextStates) {
-  var resultStates = [];
-  nextStates.forEach(function(aState){
-    var epsilonTransition = delta[aState]['e'];
-    var epsilonResolved = [];
-    resultStates.push(aState);
-    if(epsilonTransition) {
-      epsilonResolved = epsilonTransition.map(function(state) {
-        return epsilonResolver(delta, [state]);
-      });
-      resultStates.push(epsilonResolved);
-    }
-  });
-  return flatten_array(resultStates);
+    var nextEpsilons = util.flatten_array(nextStates.map(function(state) {
+      return delta[state] && delta[state]['e'] ? delta[state]['e'] : [];
+    }));
+    return util.subSet(nextStates, nextEpsilons) || !nextEpsilons.length ? nextStates :
+    epsilonResolver(delta, nextEpsilons.concat(nextStates));
 }
 
-// exports.epsilonResolver = epsilonResolver;
-
 var resolveState = function(delta, aState, symbol) {
-  var returnStates = delta[aState][symbol] || [];
-  var epsilonReturnStates = delta[aState]["e"] ?
+  var returnStates = (delta[aState] && delta[aState][symbol]) || [];
+  var epsilonReturnStates = delta[aState] && delta[aState]["e"] ?
   (delta, delta[aState]["e"]) : [];
-  return flatten_array([returnStates, epsilonReturnStates])
+  return util.flatten_array([returnStates, epsilonReturnStates])
 }
 
 var nfa_next = function(delta) {
@@ -53,20 +35,20 @@ var nfa_next = function(delta) {
     var nextStates = lastStates.map(function(aNextState) {
       return resolveState(delta, aNextState, symbol);
     })
-    return flatten_array(nextStates);
+    return util.flatten_array(nextStates);
   }
 }
 
 var initialTransition = function(delta, inputString, start_state) {
   var startStates = [start_state];
-  if(delta[start_state]["e"]) {
+  if(delta[start_state] && delta[start_state]["e"]) {
     if(!inputString[0]) {
-      startStates = flatten_array(resolveState(delta, start_state, ""));
+      startStates = util.flatten_array(resolveState(delta, start_state, ""));
     } else {
       startStates = delta[start_state]["e"];
       var transitionForFirstSymbol = delta[start_state][inputString[0]];
       if(transitionForFirstSymbol) {
-        startStates = flatten_array([startStates, transitionForFirstSymbol]);
+        startStates = util.flatten_array([startStates, transitionForFirstSymbol]);
       }
     }
   }
@@ -81,8 +63,8 @@ var nfaGenerator = function(tuple) {
     var startStates = initialTransition(delta, inputString, start_state);
     delta[start_state][inputList[0]] && (inputList = inputList.slice(1));
     var lastStates = inputList.reduce(nfa_next(tuple["delta"]), startStates);
-    lastStates = flatten_array(epsilonResolver(delta, lastStates));
-    return hasInterSection(tuple["final-states"], lastStates);
+    lastStates = util.flatten_array(epsilonResolver(delta, lastStates));
+    return util.interSection(tuple["final-states"], lastStates);
   }
 }
 
