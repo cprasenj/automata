@@ -35,24 +35,8 @@ var nfa_next = function(delta) {
     var nextStates = lastStates.map(function(aNextState) {
       return resolveState(delta, aNextState, symbol);
     })
-    return util.flatten_array(nextStates);
+    return util.flatten_array(epsilonResolver(delta, nextStates));
   }
-}
-
-var initialTransition = function(delta, inputString, start_state) {
-  var startStates = [start_state];
-  if(delta[start_state] && delta[start_state]["e"]) {
-    if(!inputString[0]) {
-      startStates = util.flatten_array(resolveState(delta, start_state, ""));
-    } else {
-      startStates = delta[start_state]["e"];
-      var transitionForFirstSymbol = delta[start_state][inputString[0]];
-      if(transitionForFirstSymbol) {
-        startStates = util.flatten_array([startStates, transitionForFirstSymbol]);
-      }
-    }
-  }
-  return startStates;
 }
 
 var nfaGenerator = function(tuple) {
@@ -60,9 +44,7 @@ var nfaGenerator = function(tuple) {
     var start_state = tuple["start-state"];
     var delta = tuple["delta"];
     var inputList = inputString.split("");
-    var startStates = initialTransition(delta, inputString, start_state);
-    delta[start_state][inputList[0]] && (inputList = inputList.slice(1));
-    var lastStates = inputList.reduce(nfa_next(tuple["delta"]), startStates);
+    var lastStates = inputList.reduce(nfa_next(tuple["delta"]), [start_state]);
     lastStates = util.flatten_array(epsilonResolver(delta, lastStates));
     return util.interSection(tuple["final-states"], lastStates);
   }
