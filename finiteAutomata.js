@@ -1,6 +1,6 @@
 var util = require('./util.js').util;
 
-var dfa_next = function(delta) {
+var dfa_transit = function(delta) {
   return function(lastState, symbol) {
     return delta[lastState][symbol];
   }
@@ -9,7 +9,7 @@ var dfa_next = function(delta) {
 var dfaGenerator = function(tuple) {
     return function(inputString) {
       var lastState = inputString.split("").reduce(
-        dfa_next(tuple["delta"]), tuple["start-state"]
+        dfa_transit(tuple["delta"]), tuple["start-state"]
       );
       return tuple["final-states"].indexOf(lastState) >= 0;
     }
@@ -23,7 +23,7 @@ var epsilonResolver = function(delta, nextStates) {
     epsilonResolver(delta, nextEpsilons.concat(nextStates));
 }
 
-var nfa_next = function(delta) {
+var nfa_transit = function(delta) {
   return function(lastStates, symbol) {
     var returnStates = util.flatten_array(lastStates.map(function(aState) {
       return (delta[aState] && delta[aState][symbol]) || [];
@@ -36,7 +36,7 @@ var nfaGenerator = function(tuple) {
   return function(inputString) {
     var delta = tuple["delta"];
     var lastStates = inputString.split("").reduce(
-      nfa_next(delta), epsilonResolver(delta, [tuple["start-state"]])
+      nfa_transit(delta), epsilonResolver(delta, [tuple["start-state"]])
     );
     return util.interSection(tuple["final-states"], lastStates);
   }
