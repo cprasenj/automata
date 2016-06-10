@@ -23,17 +23,12 @@ var epsilonResolver = function(delta, nextStates) {
     epsilonResolver(delta, nextEpsilons.concat(nextStates));
 }
 
-var resolveState = function(delta, states, symbol) {
-  var returnStates = util.flatten_array(states.map(function(aState) {
-    return (delta[aState] && delta[aState][symbol]) || [];
-  }));
-  return util.flatten_array(epsilonResolver(delta, returnStates).concat(returnStates));
-}
-
 var nfa_next = function(delta) {
   return function(lastStates, symbol) {
-    var nextStates = resolveState(delta, lastStates, symbol);
-    return util.flatten_array(nextStates);
+    var returnStates = util.flatten_array(lastStates.map(function(aState) {
+      return (delta[aState] && delta[aState][symbol]) || [];
+    }));
+    return util.flatten_array(epsilonResolver(delta, returnStates).concat(returnStates));
   }
 }
 
