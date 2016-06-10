@@ -19,7 +19,7 @@ var epsilonResolver = function(delta, nextStates) {
     var nextEpsilons = util.flatten_array(nextStates.map(function(state) {
       return delta[state] && delta[state]['e'] ? delta[state]['e'] : [];
     }));
-    return util.subSet(nextStates, nextEpsilons) || !nextEpsilons.length ? nextStates :
+    return (util.subSet(nextStates, nextEpsilons) || !nextEpsilons.length) ? nextStates :
     epsilonResolver(delta, nextEpsilons.concat(nextStates));
 }
 
@@ -27,22 +27,19 @@ var resolveState = function(delta, states, symbol) {
   var returnStates = util.flatten_array(states.map(function(aState) {
     return (delta[aState] && delta[aState][symbol]) || [];
   }));
-  return util.flatten_array(epsilonResolver(delta, returnStates));
+  return util.flatten_array(epsilonResolver(delta, returnStates).concat(returnStates));
 }
 
 var nfa_next = function(delta) {
   return function(lastStates, symbol) {
-      var nextStates = resolveState(delta, lastStates, symbol);
-      return util.flatten_array(nextStates);
+    var nextStates = resolveState(delta, lastStates, symbol);
+    return util.flatten_array(nextStates);
   }
 }
 
 var nfaGenerator = function(tuple) {
   return function(inputString) {
-    var start_state = tuple["start-state"];
-    var delta = tuple["delta"];
-    var inputList = inputString.split("");
-    var lastStates = inputList.reduce(nfa_next(tuple["delta"]), [start_state]);
+    var lastStates = inputString.split("").reduce(nfa_next(tuple["delta"]), [tuple["start-state"]]);
     return util.interSection(tuple["final-states"], lastStates);
   }
 }
