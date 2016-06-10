@@ -34,8 +34,9 @@ var nfa_next = function(delta) {
 
 var nfaGenerator = function(tuple) {
   return function(inputString) {
+    var delta = tuple["delta"];
     var lastStates = inputString.split("").reduce(
-      nfa_next(tuple["delta"]), epsilonResolver(tuple["delta"], [tuple["start-state"]])
+      nfa_next(delta), epsilonResolver(delta, [tuple["start-state"]])
     );
     return util.interSection(tuple["final-states"], lastStates);
   }
