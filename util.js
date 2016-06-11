@@ -22,21 +22,4 @@ util.compresssor = function(nestedList) {
   });
 }
 
-util.flatten_array = function (nestedArray) {
-  typeof nestedArray != 'object' && (nestedArray = [nestedArray]);
-  return [].concat.apply([], nestedArray);
-}
-
-util.subSet = function(oneStateSet, aNotherStateSet) {
-  return (aNotherStateSet.length > 0) && aNotherStateSet.every(function(state) {
-    return oneStateSet.indexOf(state) >= 0;
-  });
-}
-
-util.interSection = function(list, elemList) {
-  return elemList.some(function(elem) {
-    return list.indexOf(elem) >= 0;
-  });
-}
-
 exports.util = util;

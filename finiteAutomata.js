@@ -1,4 +1,5 @@
 var util = require('./util.js').util;
+var _ = require("lodash");
 
 var dfa_transit = function(delta) {
   return function(lastState, symbol) {
@@ -16,19 +17,19 @@ var dfaGenerator = function(tuple) {
 }
 
 var epsilonResolver = function(delta, nextStates) {
-    var nextEpsilons = util.flatten_array(nextStates.map(function(state) {
+    var nextEpsilons = _.flatten(nextStates.map(function(state) {
       return delta[state] && delta[state]['e'] ? delta[state]['e'] : [];
     }));
     return (util.subSet(nextStates, nextEpsilons) || !nextEpsilons.length) ? nextStates :
-    epsilonResolver(delta, nextEpsilons.concat(nextStates));
+    epsilonResolver(delta, _.union(nextEpsilons, nextStates));
 }
 
 var nfa_transit = function(delta) {
   return function(lastStates, symbol) {
-    var returnStates = util.flatten_array(lastStates.map(function(aState) {
+    var returnStates = _.flatten(lastStates.map(function(aState) {
       return (delta[aState] && delta[aState][symbol]) || [];
     }));
-    return util.flatten_array(epsilonResolver(delta, returnStates).concat(returnStates));
+    return _.flatten(_.union(epsilonResolver(delta, returnStates), returnStates));
   }
 }
 
@@ -38,10 +39,18 @@ var nfaGenerator = function(tuple) {
     var lastStates = inputString.split("").reduce(
       nfa_transit(delta), epsilonResolver(delta, [tuple["start-state"]])
     );
-    return util.interSection(tuple["final-states"], lastStates);
+    return _.intersection(tuple["final-states"], lastStates).length > 0;
   }
 }
 
 exports.finiteAutomata = function(type, tuple){
     return (type == "dfa") ? dfaGenerator(tuple) : nfaGenerator(tuple);
+}
+
+exports.FA = {
+  "dfaGenerator": dfaGenerator,
+  "dfa_transit": dfa_transit,
+  "nfa_transit": nfa_transit,
+  "nfaGenerator": nfaGenerator,
+  "epsilonResolver": epsilonResolver
 }
