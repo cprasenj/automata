@@ -22,4 +22,10 @@ util.compresssor = function(nestedList) {
   });
 }
 
+util.subSet = function(oneStateSet, aNotherStateSet) {
+  return (aNotherStateSet.length > 0) && aNotherStateSet.every(function(state) {
+    return oneStateSet.indexOf(state) >= 0;
+  });
+}
+
 exports.util = util;
