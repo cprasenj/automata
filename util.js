@@ -1,18 +1,23 @@
 var util = {};
+var _ = require("lodash");
 
-util.allCombinations = function(listofElements) {
-  var result = [];
-  var combinationGenerator = function(prefix, listofElements) {
-    for (var i = 0; i < listofElements.length; i++) {
-      result.push(prefix + listofElements[i]);
-      combinationGenerator(prefix + listofElements[i], listofElements.slice(i + 1));
+util.allCombinations = function combinations(list) {
+    var combinator = function(active, rest, bucket) {
+        if (!active.length && !rest.length)
+            return;
+        if (!rest.length) {
+            bucket.push(_.compact(_.flattenDeep(active)));
+        } else {
+            combinator([active, _.head(rest)], _.tail(rest), bucket);
+            combinator([active], _.tail(rest), bucket);
+        }
+        return bucket;
     }
-  }
-  combinationGenerator('', listofElements);
-  return result.map(function(elem) {
-    return elem.split('');
-  });
+    return _.remove(combinator("", list, []), function(element) {
+      return element.length != 0;
+    });
 }
+
 
 util.compresssor = function(nestedList) {
   return nestedList.map(function(oneNestedElement) {

@@ -1,13 +1,16 @@
 var FA = require('./finiteAutomata.js').FA;
-var utils = require('./util.js').util;
+var util = require('./util.js').util;
 var nfaToDfa = {};
+var _ = require("lodash");
 
-nfaToDfa.findEntry = function(delta, startState) {
-  return FA.epsilonResolver(delta, [startState]);
+nfaToDfa.identifyFinalStates = function(combinations, nfaFinalStates) {
+  return combinations.filter(function(aCombination) {
+    return _.intersection(nfaFinalStates, aCombination);
+  });
 }
 
 nfaToDfa.findStateCombinations = function(allStates) {
-    return utils.allCombinations(allStates);
+  return util.allCombinations(allStates);
 }
 
 nfaToDfa.converter = function(nfa) {

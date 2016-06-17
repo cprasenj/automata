@@ -1,38 +1,37 @@
 var assert = require('chai').assert;
 var expect = require('chai').expect;
 var nfaToDfa = require("./nfaToDfa.js").nfaToDfa;
+var util = require("./util.js").util
+var nfa = require("./data.js").nfa;
+var tuple = nfa["tuple"];
 
-var nfa ={
-          "tuple":{
-            "states":["q1","q2","q3"],
-            "alphabets":["a","b"],
-            "delta":{
-                "q1":{"b":["q2"], "e":["q3"]},
-                "q2":{"a":["q2", "q3"],"b":["q3"]},
-                "q3":{"a":["q1"]}
-              },
-              "start-state":"q1",
-              "final-states":["q1"]
-            },
-            "pass-cases":["","0","1","00","11","001","110","011","100","0011","1100"],
-            "fail-cases":["101","010","11001","00110","0101","1010"]
-          };
-
-var tuple = nfa["tuple"]
-
-describe('nfaTodfa', function() {
-  describe('#combination()', function () {
-
-    it('should return [] for []', function () {
-      var expected = [["q1"], ["q2"], ["q3"], ["q1", "q2"], ["q2", "q3"], ["q3", "q1"], ["q1", "q2", "q3"]];
-      var actual = nfaToDfa.findStateCombinations(tuple["states"]);
-      actual.every(function(actualElement) {
-        expected.some(function(oneExpectedValue) {
-          return actualElement.every(function(elem) {
-              oneExpectedValue.indexOf(elem) >= 0;
-          });
-        });
+assert.assertNestedList = function(expected, actual) {
+  var isEqual = expected.every(function(expectedElement) {
+    return actual.some(function(oneActualValue) {
+      return expectedElement.every(function(elem) {
+          return oneActualValue.indexOf(elem) >= 0;
       });
     });
   });
+  expect(isEqual).to.be.true;
+}
+
+describe('nfaTodfa', function() {
+  describe('findStateCombinations()', function () {
+
+    it('should return [["q1"], ["q2"], ["q3"], ["q1", "q2"], ["q2", "q3"], ["q3", "q1"], ["q1", "q2", "q3"]] for tuple["states"]', function () {
+      var expected = [["q1"], ["q2"], ["q3"], ["q1", "q2"], ["q2", "q3"], ["q3", "q1"], ["q1", "q2", "q3"]];
+      var actual = nfaToDfa.findStateCombinations(tuple["states"]);
+      assert.assertNestedList(expected, actual);
+    });
+  });
+
+  describe("identifyFinalStates()", function() {
+    it('shouldReturn [["q1"], ["q1", "q2"], ["q3", "q1"], ["q1", "q2", "q3"]] for [["q1"], ["q2"], ["q3"], ["q1", "q2"], ["q2", "q3"], ["q3", "q1"], ["q1", "q2", "q3"]] for tuple["states"] and ["q1"]', function() {
+        var expected = [["q1"], ["q1", "q2"], ["q3", "q1"], ["q1", "q2", "q3"]];
+        var actual = nfaToDfa.identifyFinalStates(nfaToDfa.findStateCombinations(tuple["states"]), tuple["final-states"]);
+        assert.assertNestedList(expected, actual);
+    })
+  })
+
 });
