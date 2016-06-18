@@ -42,4 +42,21 @@ describe('nfaTodfa', function() {
     });
   });
 
+  describe("findEquvalantDfaTransitions()", function() {
+    it('shouldReturn ["q3", "q1"] for combination and ["q1"]', function() {
+        var expected = {
+          q1q2q3: { a: 'q1q2q3', b: 'q2q3' },
+          q1q2: { a: 'q2q3', b: 'q2q3' },
+          q1q3: { a: 'q1', b: 'q2q3' },
+          q1: { a: '', b: 'q2q3' },
+          q2q3: { a: 'q1q2q3', b: 'q3' },
+          q2: { a: 'q2q3', b: 'q3' },
+          q3: { a: 'q1', b: '' },
+          '': { a: '', b: '' }
+        };
+        var actual = nfaToDfa.findEquvalantDfaTransitions(tuple['delta'], nfaToDfa.findStateCombinations(tuple['states']), tuple['alphabets']);
+        assert.deepEqual(expected, actual);
+    });
+  });
+
 });
