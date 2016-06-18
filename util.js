@@ -4,7 +4,7 @@ var _ = require("lodash");
 util.allCombinations = function combinations(list) {
     var combinator = function(active, rest, bucket) {
         if (!active.length && !rest.length)
-            return;
+            return [];
         if (!rest.length) {
             bucket.push(_.compact(_.flattenDeep(active)));
         } else {
@@ -13,18 +13,7 @@ util.allCombinations = function combinations(list) {
         }
         return bucket;
     }
-    return _.remove(combinator("", list, []), function(element) {
-      return element.length != 0;
-    });
-}
-
-
-util.compresssor = function(nestedList) {
-  return nestedList.map(function(oneNestedElement) {
-    return oneNestedElement.reduce(function(result, val) {
-      return result += val;
-    });
-  });
+    return combinator("", list, []);
 }
 
 util.subSet = function(oneStateSet, aNotherStateSet) {

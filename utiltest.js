@@ -22,7 +22,6 @@ describe('util', function() {
     it('should return [1, 2, 3, [1, 2], [2, 3], [3, 1], [1, 2, 3]] for [1, 2, 3]', function () {
       var expected = [['1'], ['2'], ['3'], ['1', '2'], ['2', '3'], ['3', '1'], ['1', '2', '3']];
       var actual = util.allCombinations(['1', '2', '3']);
-
       assert.assertNestedList(expected, actual);
     });
 

@@ -31,7 +31,15 @@ describe('nfaTodfa', function() {
         var expected = [["q1"], ["q1", "q2"], ["q3", "q1"], ["q1", "q2", "q3"]];
         var actual = nfaToDfa.identifyFinalStates(nfaToDfa.findStateCombinations(tuple["states"]), tuple["final-states"]);
         assert.assertNestedList(expected, actual);
-    })
-  })
+    });
+  });
+
+  describe("findStartState()", function() {
+    it('shouldReturn ["q3", "q1"] for combination and ["q1"]', function() {
+        var expected = ["q3", "q1"];
+        var actual = nfaToDfa.findStartState(tuple['delta'], tuple["start-state"]);
+        expect(actual).to.have.members(expected);
+    });
+  });
 
 });
