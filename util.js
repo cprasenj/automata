@@ -22,4 +22,15 @@ util.subSet = function(oneStateSet, aNotherStateSet) {
   });
 }
 
+util.evalNextedValue = function(object, keys) {
+    return keys.reduce(function(nextObject, key) {
+      return !nextObject ? nextObject : nextObject[key];
+    }, object) || [];
+}
+
+util.sortedJoin = function(list) {
+  return list.sort().join('');
+}
+
+
 exports.util = util;
