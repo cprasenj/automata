@@ -23,7 +23,7 @@ var findDfaTransitions = function(delta, alphabet) {
   return function(state) {
     var nextStates = util.evalNextedValue(delta, [state, alphabet]);
     var epsilonresolvedStates = nextStates.length ?
-    FA.epsilonResolver(delta, util.evalNextedValue(delta, [state, 'e'])) : [];
+    FA.epsilonResolver(delta, nextStates) : [];
     return _.union(epsilonresolvedStates ,nextStates);
   }
 };
@@ -40,7 +40,7 @@ nfaToDfa.findEquvalantDfaTransitions = function(delta, combinatins, alphabets) {
   var dfaDelta = {};
   alphabets.forEach(function(alphabet) {
     combinatins.forEach(function(combination) {
-      var key = combination.sort().join('');
+      var key = util.sortedJoin(combination);
       dfaDelta[key] || (dfaDelta[key] = {});
       dfaDelta[key][alphabet] = nextStateForAnAlphabet(combination, delta, alphabet);
     });

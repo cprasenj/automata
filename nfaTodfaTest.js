@@ -47,11 +47,11 @@ describe('nfaTodfa', function() {
         var expected = {
           'q1q2q3': { 'a': 'q1q2q3', 'b': 'q2q3' },
           'q1q2': { 'a': 'q2q3', 'b': 'q2q3' },
-          'q1q3': { 'a': 'q1', 'b': 'q2q3' },
-          'q1': { 'a': '', 'b': 'q2q3' },
+          'q1q3': { 'a': 'q1q3', 'b': 'q2' },
+          'q1': { 'a': '', 'b': 'q2' },
           'q2q3': { 'a': 'q1q2q3', 'b': 'q3' },
           'q2': { 'a': 'q2q3', 'b': 'q3' },
-          'q3': { 'a': 'q1', 'b': '' },
+          'q3': { 'a': 'q1q3', 'b': '' },
           '': { 'a': '', 'b': '' }
         };
         var actual = nfaToDfa.findEquvalantDfaTransitions(tuple['delta'], nfaToDfa.findStateCombinations(tuple['states']), tuple['alphabets']);
@@ -65,15 +65,15 @@ describe('nfaTodfa', function() {
           'states':['q1', 'q2', 'q3', 'q1q2', 'q2q3', 'q1q3', 'q1q2q3', ''],
           'alphabets':['a','b'],
           'delta': {
-                      'q1q2q3': { 'a': 'q1q2q3', 'b': 'q2q3' },
-                      'q1q2': { 'a': 'q2q3', 'b': 'q2q3' },
-                      'q1q3': { 'a': 'q1', 'b': 'q2q3' },
-                      'q1': { 'a': '', 'b': 'q2q3' },
-                      'q2q3': { 'a': 'q1q2q3', 'b': 'q3' },
-                      'q2': { 'a': 'q2q3', 'b': 'q3' },
-                      'q3': { 'a': 'q1', 'b': '' },
-                      '': { 'a': '', 'b': '' }
-              },
+            'q1q2q3': { 'a': 'q1q2q3', 'b': 'q2q3' },
+            'q1q2': { 'a': 'q2q3', 'b': 'q2q3' },
+            'q1q3': { 'a': 'q1q3', 'b': 'q2' },
+            'q1': { 'a': '', 'b': 'q2' },
+            'q2q3': { 'a': 'q1q2q3', 'b': 'q3' },
+            'q2': { 'a': 'q2q3', 'b': 'q3' },
+            'q3': { 'a': 'q1q3', 'b': '' },
+            '': { 'a': '', 'b': '' }
+          },
           'start-state':'q1q3',
           'final-states':['q1', 'q1q2', 'q1q3', 'q1q2q3']
         };
