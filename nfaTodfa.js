@@ -21,10 +21,8 @@ nfaToDfa.identifyFinalStates = function(combinations, nfaFinalStates) {
 
 var findDfaTransitions = function(delta, alphabet) {
   return function(state) {
-    var nextStates = util.evalNextedValue(delta, [state, alphabet]);
-    var epsilonresolvedStates = nextStates.length ?
-    FA.epsilonResolver(delta, nextStates) : [];
-    return _.union(epsilonresolvedStates ,nextStates);
+    var nextStates = util.evalNestedValue(delta, [state, alphabet]);
+    return _.union(FA.epsilonResolver(delta, nextStates) ,nextStates);
   }
 };
 

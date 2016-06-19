@@ -22,7 +22,7 @@ util.subSet = function(oneStateSet, aNotherStateSet) {
   });
 }
 
-util.evalNextedValue = function(object, keys) {
+util.evalNestedValue = function(object, keys) {
     return keys.reduce(function(nextObject, key) {
       return !nextObject ? nextObject : nextObject[key];
     }, object) || [];
