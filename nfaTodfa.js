@@ -14,7 +14,7 @@ nfaToDfa.findStartState = function(delta, initialState) {
 nfaToDfa.identifyFinalStates = function(combinations, nfaFinalStates) {
   return combinations.filter(function(aCombination) {
     return nfaFinalStates.some(function(aFinalState) {
-      return aCombination.indexOf(aFinalState) >= 0;
+      return util.contains(aCombination, aFinalState);
     });
   });
 }

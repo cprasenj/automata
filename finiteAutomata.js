@@ -12,7 +12,7 @@ var dfaGenerator = function(tuple) {
       var lastState = inputString.split("").reduce(
         dfa_transit(tuple["delta"]), tuple["start-state"]
       );
-      return tuple["final-states"].indexOf(lastState) >= 0;
+      return util.contains(tuple["final-states"], lastState);
     }
 }
 

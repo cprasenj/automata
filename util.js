@@ -32,4 +32,8 @@ util.sortedJoin = function(list) {
   return list.sort().join('');
 }
 
+util.contains = function(array, element) {
+  return array.indexOf(element) >= 0;
+}
+
 exports.util = util;
