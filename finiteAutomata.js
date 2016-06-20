@@ -27,7 +27,7 @@ var epsilonResolver = function(delta, nextStates) {
 var nfa_transit = function(delta) {
   return function(lastStates, symbol) {
     var returnStates = _.flatten(lastStates.map(function(aState) {
-      return (delta[aState] && delta[aState][symbol]) || [];
+      return util.evalNestedValue(delta, [aState, symbol]);
     }));
     return _.flatten(_.union(epsilonResolver(delta, returnStates), returnStates));
   }
@@ -39,7 +39,7 @@ var nfaGenerator = function(tuple) {
     var lastStates = inputString.split("").reduce(
       nfa_transit(delta), epsilonResolver(delta, [tuple["start-state"]])
     );
-    return _.intersection(tuple["final-states"], lastStates).length > 0;
+    return !_.isEmpty(_.intersection(tuple["final-states"], lastStates));
   }
 }
 
