@@ -32,5 +32,4 @@ util.sortedJoin = function(list) {
   return list.sort().join('');
 }
 
-
 exports.util = util;

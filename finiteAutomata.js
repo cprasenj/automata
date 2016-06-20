@@ -18,7 +18,7 @@ var dfaGenerator = function(tuple) {
 
 var epsilonResolver = function(delta, nextStates) {
     var nextEpsilons = _.flatten(nextStates.map(function(state) {
-      return delta[state] && delta[state]['e'] ? delta[state]['e'] : [];
+      return util.evalNestedValue(delta, [state, 'e']);
     }));
     return (util.subSet(nextStates, nextEpsilons) || !nextEpsilons.length) ? nextStates :
     epsilonResolver(delta, _.union(nextEpsilons, nextStates));
